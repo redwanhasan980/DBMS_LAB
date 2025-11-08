@@ -1,0 +1,122 @@
+===============================================================================
+LIBRARY MANAGEMENT SYSTEM - PRIMARY KEYS & FOREIGN KEYS
+===============================================================================
+Database Name: library_management_system
+Total Tables: 12
+===============================================================================
+
+
+TABLE 1: DEPARTMENT
+-------------------
+Primary Key:
+  - DepartmentNameShortHand
+
+Foreign Keys:
+  - None
+
+
+TABLE 2: APPLICATION
+--------------------
+Primary Key:
+  - ApplicationID
+
+Foreign Keys:
+  - DepartmentNameShortHand → department(DepartmentNameShortHand)
+
+
+TABLE 3: BOOKREQUISITION
+-------------------------
+Primary Key:
+  - RequisitionID
+
+Foreign Keys:
+  - ApplicationID → application(ApplicationID)
+
+
+TABLE 4: VENDOR
+---------------
+Primary Key:
+  - VendorID
+
+Foreign Keys:
+  - None
+
+
+TABLE 5: PROCUREMENT
+--------------------
+Primary Key:
+  - ProcurementID
+
+Foreign Keys:
+  - RequisitionID → bookrequisition(RequisitionID)
+  - VendorID → vendor(VendorID)
+
+
+TABLE 6: BOOK
+-------------
+Primary Key:
+  - AccessionNumber
+
+Foreign Keys:
+  - None
+
+
+TABLE 7: CLASSIFICATION
+-----------------------
+Primary Key:
+  - AccessionNumber
+
+Foreign Keys:
+  - AccessionNumber → book(AccessionNumber) ON DELETE CASCADE
+
+
+TABLE 8: STUDENT
+----------------
+Primary Key:
+  - StudentRegNumber
+
+Foreign Keys:
+  - DepartmentNameShortHand → department(DepartmentNameShortHand)
+
+
+TABLE 9: FACULTY
+----------------
+Primary Key:
+  - TeacherID
+
+Foreign Keys:
+  - DepartmentNameShortHand → department(DepartmentNameShortHand)
+
+
+TABLE 10: STUDENTBORROWING
+--------------------------
+Primary Key:
+  - BorrowID
+
+Foreign Keys:
+  - StudentRegNumber → student(StudentRegNumber)
+  - AccessionNumber → book(AccessionNumber)
+
+
+TABLE 11: FACULTYBORROWING
+--------------------------
+Primary Key:
+  - BorrowID
+
+Foreign Keys:
+  - TeacherID → faculty(TeacherID)
+  - AccessionNumber → book(AccessionNumber)
+
+
+TABLE 12: OUTSIDEBOOKENTRY
+--------------------------
+Primary Key:
+  - EntryID
+
+Foreign Keys:
+  - StudentRegNumber → student(StudentRegNumber)
+
+
+===============================================================================
+END OF DOCUMENT
+===============================================================================

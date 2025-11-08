@@ -1,0 +1,1217 @@
+MYSQL LAB EXAM QUESTIONS - PRACTICAL ONLY (WITH ANSWERS)
+(From Less Difficult to More Difficult)
+
+===============================================================================
+LEVEL 1: BASIC DATABASE & TABLE OPERATIONS (Easy)
+===============================================================================
+
+1. Create a database named "college_db" and use it.
+
+ANSWER:
+CREATE DATABASE college_db;
+USE college_db;
+
+
+2. Create a table "students" with columns: id (INT, PRIMARY KEY, AUTO_INCREMENT), 
+   name (VARCHAR(50)), age (INT), email (VARCHAR(100)).
+
+ANSWER:
+CREATE TABLE students (
+    id INT PRIMARY KEY AUTO_INCREMENT,
+    name VARCHAR(50),
+    age INT,
+    email VARCHAR(100)
+);
+
+
+3. Insert 5 records into the students table.
+
+ANSWER:
+INSERT INTO students (name, age, email) VALUES
+('John Doe', 20, 'john@gmail.com'),
+('Jane Smith', 22, 'jane@gmail.com'),
+('Mike Johnson', 19, 'mike@yahoo.com'),
+('Sarah Williams', 21, 'sarah@gmail.com'),
+('David Brown', 23, 'david@outlook.com');
+
+
+4. Display all records from the students table.
+
+ANSWER:
+SELECT * FROM students;
+
+
+5. Display only the names and emails of all students.
+
+ANSWER:
+SELECT name, email FROM students;
+
+
+6. Add a new column "phone" (VARCHAR(15)) to the students table.
+
+ANSWER:
+ALTER TABLE students ADD COLUMN phone VARCHAR(15);
+
+
+7. Update the phone number of a specific student by their id.
+
+ANSWER:
+UPDATE students SET phone = '1234567890' WHERE id = 1;
+
+
+8. Delete a student record where id = 3.
+
+ANSWER:
+DELETE FROM students WHERE id = 3;
+
+
+9. Display students whose age is greater than 20.
+
+ANSWER:
+SELECT * FROM students WHERE age > 20;
+
+
+10. Display all students ordered by name in ascending order.
+
+ANSWER:
+SELECT * FROM students ORDER BY name ASC;
+
+
+===============================================================================
+LEVEL 2: BASIC QUERIES & CONSTRAINTS (Medium-Easy)
+===============================================================================
+
+11. Create a table "courses" with: course_id (PRIMARY KEY), course_name, credits.
+    Insert at least 3 courses.
+
+ANSWER:
+CREATE TABLE courses (
+    course_id INT PRIMARY KEY,
+    course_name VARCHAR(100),
+    credits INT
+);
+
+INSERT INTO courses VALUES
+(101, 'Database Systems', 4),
+(102, 'Data Structures', 3),
+(103, 'Web Development', 3);
+
+
+12. Display all students whose name starts with 'A'.
+
+ANSWER:
+SELECT * FROM students WHERE name LIKE 'A%';
+
+
+13. Count the total number of students in the students table.
+
+ANSWER:
+SELECT COUNT(*) AS total_students FROM students;
+
+
+14. Find the maximum and minimum age from the students table.
+
+ANSWER:
+SELECT MAX(age) AS max_age, MIN(age) AS min_age FROM students;
+
+
+15. Display students whose email contains "gmail.com".
+
+ANSWER:
+SELECT * FROM students WHERE email LIKE '%gmail.com%';
+
+
+16. Update all students' age by incrementing it by 1.
+
+ANSWER:
+UPDATE students SET age = age + 1;
+
+
+17. Create a table "departments" with dept_id (PRIMARY KEY), dept_name (UNIQUE).
+
+ANSWER:
+CREATE TABLE departments (
+    dept_id INT PRIMARY KEY,
+    dept_name VARCHAR(50) UNIQUE
+);
+
+
+18. Display distinct ages from the students table.
+
+ANSWER:
+SELECT DISTINCT age FROM students;
+
+
+19. Display students whose age is between 18 and 25.
+
+ANSWER:
+SELECT * FROM students WHERE age BETWEEN 18 AND 25;
+
+
+20. Delete all students whose age is less than 18.
+
+ANSWER:
+DELETE FROM students WHERE age < 18;
+
+
+===============================================================================
+LEVEL 3: MULTIPLE TABLES & RELATIONSHIPS (Medium)
+===============================================================================
+
+21. Create a table "enrollments" with: enrollment_id (PRIMARY KEY), 
+    student_id (FOREIGN KEY referencing students), course_id (FOREIGN KEY 
+    referencing courses), enrollment_date (DATE).
+
+ANSWER:
+CREATE TABLE enrollments (
+    enrollment_id INT PRIMARY KEY AUTO_INCREMENT,
+    student_id INT,
+    course_id INT,
+    enrollment_date DATE,
+    FOREIGN KEY (student_id) REFERENCES students(id),
+    FOREIGN KEY (course_id) REFERENCES courses(course_id)
+);
+
+
+22. Insert records into enrollments table linking students to courses.
+
+ANSWER:
+INSERT INTO enrollments (student_id, course_id, enrollment_date) VALUES
+(1, 101, '2025-01-15'),
+(1, 102, '2025-01-15'),
+(2, 101, '2025-01-16'),
+(4, 103, '2025-01-17'),
+(5, 102, '2025-01-18');
+
+
+23. Display all students along with their enrolled course names using INNER JOIN.
+
+ANSWER:
+SELECT s.name, c.course_name
+FROM students s
+INNER JOIN enrollments e ON s.id = e.student_id
+INNER JOIN courses c ON e.course_id = c.course_id;
+
+
+24. Display all courses and show which students are enrolled (use LEFT JOIN).
+
+ANSWER:
+SELECT c.course_name, s.name
+FROM courses c
+LEFT JOIN enrollments e ON c.course_id = e.course_id
+LEFT JOIN students s ON e.student_id = s.id;
+
+
+25. Find students who are not enrolled in any course.
+
+ANSWER:
+SELECT s.* 
+FROM students s
+LEFT JOIN enrollments e ON s.id = e.student_id
+WHERE e.enrollment_id IS NULL;
+
+
+26. Count how many students are enrolled in each course.
+
+ANSWER:
+SELECT c.course_name, COUNT(e.student_id) AS student_count
+FROM courses c
+LEFT JOIN enrollments e ON c.course_id = e.course_id
+GROUP BY c.course_name;
+
+
+27. Display the average age of students grouped by enrolled courses.
+
+ANSWER:
+SELECT c.course_name, AVG(s.age) AS avg_age
+FROM courses c
+INNER JOIN enrollments e ON c.course_id = e.course_id
+INNER JOIN students s ON e.student_id = s.id
+GROUP BY c.course_name;
+
+
+28. Create a "teachers" table with teacher_id, name, and department.
+    Link courses to teachers and display course names with teacher names.
+
+ANSWER:
+CREATE TABLE teachers (
+    teacher_id INT PRIMARY KEY,
+    name VARCHAR(50),
+    department VARCHAR(50)
+);
+
+ALTER TABLE courses ADD COLUMN teacher_id INT;
+ALTER TABLE courses ADD FOREIGN KEY (teacher_id) REFERENCES teachers(teacher_id);
+
+INSERT INTO teachers VALUES
+(1, 'Dr. Smith', 'Computer Science'),
+(2, 'Dr. Johnson', 'Computer Science');
+
+UPDATE courses SET teacher_id = 1 WHERE course_id = 101;
+UPDATE courses SET teacher_id = 2 WHERE course_id = 102;
+UPDATE courses SET teacher_id = 1 WHERE course_id = 103;
+
+SELECT c.course_name, t.name AS teacher_name
+FROM courses c
+INNER JOIN teachers t ON c.teacher_id = t.teacher_id;
+
+
+29. Find all students enrolled in more than one course.
+
+ANSWER:
+SELECT s.name, COUNT(e.course_id) AS course_count
+FROM students s
+INNER JOIN enrollments e ON s.id = e.student_id
+GROUP BY s.id, s.name
+HAVING COUNT(e.course_id) > 1;
+
+
+30. Display students who are enrolled in a specific course (e.g., "Database Systems").
+
+ANSWER:
+SELECT s.name
+FROM students s
+INNER JOIN enrollments e ON s.id = e.student_id
+INNER JOIN courses c ON e.course_id = c.course_id
+WHERE c.course_name = 'Database Systems';
+
+
+===============================================================================
+LEVEL 4: AGGREGATE FUNCTIONS & GROUPING (Medium-Hard)
+===============================================================================
+
+31. Display the total number of enrollments for each student.
+
+ANSWER:
+SELECT s.name, COUNT(e.enrollment_id) AS total_enrollments
+FROM students s
+LEFT JOIN enrollments e ON s.id = e.student_id
+GROUP BY s.id, s.name;
+
+
+32. Find the course with the maximum number of enrollments.
+
+ANSWER:
+SELECT c.course_name, COUNT(e.student_id) AS enrollment_count
+FROM courses c
+INNER JOIN enrollments e ON c.course_id = e.course_id
+GROUP BY c.course_id, c.course_name
+ORDER BY enrollment_count DESC
+LIMIT 1;
+
+
+33. Display students whose age is greater than the average age of all students.
+
+ANSWER:
+SELECT * FROM students
+WHERE age > (SELECT AVG(age) FROM students);
+
+
+34. Group students by age and count how many students are in each age group.
+
+ANSWER:
+SELECT age, COUNT(*) AS student_count
+FROM students
+GROUP BY age;
+
+
+35. Display courses that have more than 2 students enrolled.
+
+ANSWER:
+SELECT c.course_name, COUNT(e.student_id) AS student_count
+FROM courses c
+INNER JOIN enrollments e ON c.course_id = e.course_id
+GROUP BY c.course_id, c.course_name
+HAVING COUNT(e.student_id) > 2;
+
+
+36. Calculate the total credits a student has enrolled for.
+
+ANSWER:
+SELECT s.name, SUM(c.credits) AS total_credits
+FROM students s
+INNER JOIN enrollments e ON s.id = e.student_id
+INNER JOIN courses c ON e.course_id = c.course_id
+GROUP BY s.id, s.name;
+
+
+37. Find the student(s) with the highest age.
+
+ANSWER:
+SELECT * FROM students
+WHERE age = (SELECT MAX(age) FROM students);
+
+
+38. Display department-wise count of teachers.
+
+ANSWER:
+SELECT department, COUNT(*) AS teacher_count
+FROM teachers
+GROUP BY department;
+
+
+39. Find courses that have no students enrolled.
+
+ANSWER:
+SELECT c.course_name
+FROM courses c
+LEFT JOIN enrollments e ON c.course_id = e.course_id
+WHERE e.enrollment_id IS NULL;
+
+
+40. Display the student name and total number of courses they are enrolled in,
+    only for students enrolled in at least 2 courses.
+
+ANSWER:
+SELECT s.name, COUNT(e.course_id) AS course_count
+FROM students s
+INNER JOIN enrollments e ON s.id = e.student_id
+GROUP BY s.id, s.name
+HAVING COUNT(e.course_id) >= 2;
+
+
+===============================================================================
+LEVEL 5: SUBQUERIES & ADVANCED QUERIES (Hard)
+===============================================================================
+
+41. Find students who are enrolled in the same course as student with id = 1.
+
+ANSWER:
+SELECT DISTINCT s.name
+FROM students s
+INNER JOIN enrollments e ON s.id = e.student_id
+WHERE e.course_id IN (
+    SELECT course_id FROM enrollments WHERE student_id = 1
+) AND s.id != 1;
+
+
+42. Display the second highest age from the students table.
+
+ANSWER:
+SELECT MAX(age) AS second_highest_age
+FROM students
+WHERE age < (SELECT MAX(age) FROM students);
+
+-- Alternative method:
+SELECT DISTINCT age
+FROM students
+ORDER BY age DESC
+LIMIT 1 OFFSET 1;
+
+
+43. Find students who are enrolled in all courses (relational division).
+
+ANSWER:
+SELECT s.name
+FROM students s
+WHERE NOT EXISTS (
+    SELECT c.course_id FROM courses c
+    WHERE NOT EXISTS (
+        SELECT e.course_id FROM enrollments e
+        WHERE e.student_id = s.id AND e.course_id = c.course_id
+    )
+);
+
+
+44. Use a subquery to find courses where the number of enrollments is above average.
+
+ANSWER:
+SELECT c.course_name, COUNT(e.student_id) AS enrollment_count
+FROM courses c
+INNER JOIN enrollments e ON c.course_id = e.course_id
+GROUP BY c.course_id, c.course_name
+HAVING COUNT(e.student_id) > (
+    SELECT AVG(enrollment_count)
+    FROM (
+        SELECT COUNT(student_id) AS enrollment_count
+        FROM enrollments
+        GROUP BY course_id
+    ) AS avg_enrollments
+);
+
+
+45. Display students who have the same age as any student named 'John'.
+
+ANSWER:
+SELECT * FROM students
+WHERE age IN (SELECT age FROM students WHERE name LIKE '%John%');
+
+
+46. Create a query using UNION to combine students and teachers' names.
+
+ANSWER:
+SELECT name, 'Student' AS type FROM students
+UNION
+SELECT name, 'Teacher' AS type FROM teachers;
+
+
+47. Find students who are NOT enrolled in a course named 'Mathematics'.
+
+ANSWER:
+SELECT * FROM students
+WHERE id NOT IN (
+    SELECT e.student_id
+    FROM enrollments e
+    INNER JOIN courses c ON e.course_id = c.course_id
+    WHERE c.course_name = 'Mathematics'
+);
+
+
+48. Display the nth highest age (e.g., 3rd highest) from students.
+
+ANSWER:
+-- For 3rd highest age:
+SELECT DISTINCT age
+FROM students
+ORDER BY age DESC
+LIMIT 1 OFFSET 2;
+
+
+49. Use a correlated subquery to find students whose age is greater than 
+    the average age of students in their enrolled courses.
+
+ANSWER:
+SELECT DISTINCT s.name, s.age
+FROM students s
+WHERE s.age > (
+    SELECT AVG(s2.age)
+    FROM students s2
+    INNER JOIN enrollments e2 ON s2.id = e2.student_id
+    WHERE e2.course_id IN (
+        SELECT e.course_id FROM enrollments e WHERE e.student_id = s.id
+    )
+);
+
+
+50. Find pairs of students who are enrolled in the same course.
+
+ANSWER:
+SELECT DISTINCT s1.name AS student1, s2.name AS student2, c.course_name
+FROM enrollments e1
+INNER JOIN enrollments e2 ON e1.course_id = e2.course_id
+INNER JOIN students s1 ON e1.student_id = s1.id
+INNER JOIN students s2 ON e2.student_id = s2.id
+INNER JOIN courses c ON e1.course_id = c.course_id
+WHERE e1.student_id < e2.student_id;
+
+
+===============================================================================
+LEVEL 6: VIEWS, PROCEDURES & ADVANCED OPERATIONS (Very Hard)
+===============================================================================
+
+51. Create a view "student_course_view" that shows student names with their 
+    enrolled course names.
+
+ANSWER:
+CREATE VIEW student_course_view AS
+SELECT s.name AS student_name, c.course_name
+FROM students s
+INNER JOIN enrollments e ON s.id = e.student_id
+INNER JOIN courses c ON e.course_id = c.course_id;
+
+-- To view the data:
+SELECT * FROM student_course_view;
+
+
+52. Create a stored procedure to insert a new student with parameters.
+
+ANSWER:
+DELIMITER //
+CREATE PROCEDURE InsertStudent(
+    IN p_name VARCHAR(50),
+    IN p_age INT,
+    IN p_email VARCHAR(100)
+)
+BEGIN
+    INSERT INTO students (name, age, email)
+    VALUES (p_name, p_age, p_email);
+END //
+DELIMITER ;
+
+-- To call the procedure:
+CALL InsertStudent('Alice Johnson', 20, 'alice@gmail.com');
+
+
+53. Create a stored procedure to display all students enrolled in a given course.
+
+ANSWER:
+DELIMITER //
+CREATE PROCEDURE GetStudentsByCourse(IN p_course_name VARCHAR(100))
+BEGIN
+    SELECT s.name, s.email
+    FROM students s
+    INNER JOIN enrollments e ON s.id = e.student_id
+    INNER JOIN courses c ON e.course_id = c.course_id
+    WHERE c.course_name = p_course_name;
+END //
+DELIMITER ;
+
+-- To call:
+CALL GetStudentsByCourse('Database Systems');
+
+
+54. Create a trigger that automatically logs when a new student is inserted.
+
+ANSWER:
+-- First create a log table:
+CREATE TABLE student_logs (
+    log_id INT PRIMARY KEY AUTO_INCREMENT,
+    student_id INT,
+    action VARCHAR(50),
+    log_time TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+DELIMITER //
+CREATE TRIGGER after_student_insert
+AFTER INSERT ON students
+FOR EACH ROW
+BEGIN
+    INSERT INTO student_logs (student_id, action)
+    VALUES (NEW.id, 'Student Inserted');
+END //
+DELIMITER ;
+
+
+55. Create an index on the "name" column of the students table.
+
+ANSWER:
+CREATE INDEX idx_student_name ON students(name);
+
+-- To view indexes:
+SHOW INDEX FROM students;
+
+
+56. Use a CASE statement to display students with age categories 
+    (Teen, Adult, Senior).
+
+ANSWER:
+SELECT name, age,
+    CASE
+        WHEN age < 18 THEN 'Teen'
+        WHEN age BETWEEN 18 AND 25 THEN 'Young Adult'
+        WHEN age BETWEEN 26 AND 40 THEN 'Adult'
+        ELSE 'Senior'
+    END AS age_category
+FROM students;
+
+
+57. Create a stored function that returns the total number of courses 
+    a student is enrolled in.
+
+ANSWER:
+DELIMITER //
+CREATE FUNCTION GetCourseCount(p_student_id INT)
+RETURNS INT
+DETERMINISTIC
+BEGIN
+    DECLARE course_count INT;
+    SELECT COUNT(*) INTO course_count
+    FROM enrollments
+    WHERE student_id = p_student_id;
+    RETURN course_count;
+END //
+DELIMITER ;
+
+-- To use:
+SELECT name, GetCourseCount(id) AS total_courses
+FROM students;
+
+
+58. Create a procedure that accepts student_id and displays all their courses.
+
+ANSWER:
+DELIMITER //
+CREATE PROCEDURE GetStudentCourses(IN p_student_id INT)
+BEGIN
+    SELECT c.course_name, c.credits, e.enrollment_date
+    FROM courses c
+    INNER JOIN enrollments e ON c.course_id = e.course_id
+    WHERE e.student_id = p_student_id;
+END //
+DELIMITER ;
+
+-- To call:
+CALL GetStudentCourses(1);
+
+
+59. Use ROW_NUMBER() or ranking functions to rank students by age.
+
+ANSWER:
+SELECT name, age,
+    ROW_NUMBER() OVER (ORDER BY age DESC) AS row_num,
+    RANK() OVER (ORDER BY age DESC) AS rank_num,
+    DENSE_RANK() OVER (ORDER BY age DESC) AS dense_rank_num
+FROM students;
+
+
+60. Create a transaction that enrolls a student in multiple courses, 
+    with ROLLBACK if any insertion fails.
+
+ANSWER:
+START TRANSACTION;
+
+INSERT INTO enrollments (student_id, course_id, enrollment_date)
+VALUES (1, 101, CURDATE());
+
+INSERT INTO enrollments (student_id, course_id, enrollment_date)
+VALUES (1, 102, CURDATE());
+
+-- If everything is successful:
+COMMIT;
+
+-- If there's an error (use this to undo):
+-- ROLLBACK;
+
+
+===============================================================================
+LEVEL 7: COMPLEX REAL-WORLD SCENARIOS (Expert)
+===============================================================================
+
+61. Create a complete Library Management System:
+    - Tables: books, members, borrowings
+    - Insert sample data
+    - Query to show overdue books
+
+ANSWER:
+-- Create tables
+CREATE TABLE books (
+    book_id INT PRIMARY KEY,
+    title VARCHAR(100),
+    author VARCHAR(100),
+    available_copies INT
+);
+
+CREATE TABLE members (
+    member_id INT PRIMARY KEY,
+    name VARCHAR(50),
+    email VARCHAR(100),
+    join_date DATE
+);
+
+CREATE TABLE borrowings (
+    borrow_id INT PRIMARY KEY AUTO_INCREMENT,
+    book_id INT,
+    member_id INT,
+    borrow_date DATE,
+    due_date DATE,
+    return_date DATE,
+    FOREIGN KEY (book_id) REFERENCES books(book_id),
+    FOREIGN KEY (member_id) REFERENCES members(member_id)
+);
+
+-- Insert sample data
+INSERT INTO books VALUES
+(1, 'Database Systems', 'Elmasri', 5),
+(2, 'Operating Systems', 'Silberschatz', 3),
+(3, 'Computer Networks', 'Tanenbaum', 4);
+
+INSERT INTO members VALUES
+(1, 'John Doe', 'john@email.com', '2024-01-15'),
+(2, 'Jane Smith', 'jane@email.com', '2024-02-20');
+
+INSERT INTO borrowings (book_id, member_id, borrow_date, due_date, return_date) VALUES
+(1, 1, '2025-10-01', '2025-10-15', NULL),
+(2, 2, '2025-10-20', '2025-11-03', NULL);
+
+-- Query to show overdue books
+SELECT m.name, b.title, br.borrow_date, br.due_date,
+    DATEDIFF(CURDATE(), br.due_date) AS days_overdue
+FROM borrowings br
+INNER JOIN books b ON br.book_id = b.book_id
+INNER JOIN members m ON br.member_id = m.member_id
+WHERE br.return_date IS NULL AND br.due_date < CURDATE();
+
+
+62. Create a database for Employee Management:
+    - Tables: employees, departments, salaries
+    - Find employees with salary > their department average
+
+ANSWER:
+CREATE TABLE departments (
+    dept_id INT PRIMARY KEY,
+    dept_name VARCHAR(50)
+);
+
+CREATE TABLE employees (
+    emp_id INT PRIMARY KEY,
+    emp_name VARCHAR(50),
+    dept_id INT,
+    FOREIGN KEY (dept_id) REFERENCES departments(dept_id)
+);
+
+CREATE TABLE salaries (
+    emp_id INT PRIMARY KEY,
+    salary DECIMAL(10,2),
+    FOREIGN KEY (emp_id) REFERENCES employees(emp_id)
+);
+
+INSERT INTO departments VALUES (1, 'IT'), (2, 'HR'), (3, 'Sales');
+
+INSERT INTO employees VALUES
+(101, 'Alice', 1), (102, 'Bob', 1), (103, 'Charlie', 2), (104, 'David', 2);
+
+INSERT INTO salaries VALUES
+(101, 75000), (102, 85000), (103, 50000), (104, 55000);
+
+-- Find employees with salary > their department average
+SELECT e.emp_name, d.dept_name, s.salary, dept_avg.avg_salary
+FROM employees e
+INNER JOIN departments d ON e.dept_id = d.dept_id
+INNER JOIN salaries s ON e.emp_id = s.emp_id
+INNER JOIN (
+    SELECT e2.dept_id, AVG(s2.salary) AS avg_salary
+    FROM employees e2
+    INNER JOIN salaries s2 ON e2.emp_id = s2.emp_id
+    GROUP BY e2.dept_id
+) dept_avg ON e.dept_id = dept_avg.dept_id
+WHERE s.salary > dept_avg.avg_salary;
+
+
+63. Design and implement a Hospital Database:
+    - Tables: patients, doctors, appointments
+    - Query to find doctors with most appointments
+
+ANSWER:
+CREATE TABLE doctors (
+    doctor_id INT PRIMARY KEY,
+    doctor_name VARCHAR(50),
+    specialization VARCHAR(50)
+);
+
+CREATE TABLE patients (
+    patient_id INT PRIMARY KEY,
+    patient_name VARCHAR(50),
+    age INT,
+    contact VARCHAR(15)
+);
+
+CREATE TABLE appointments (
+    appointment_id INT PRIMARY KEY AUTO_INCREMENT,
+    doctor_id INT,
+    patient_id INT,
+    appointment_date DATE,
+    status VARCHAR(20),
+    FOREIGN KEY (doctor_id) REFERENCES doctors(doctor_id),
+    FOREIGN KEY (patient_id) REFERENCES patients(patient_id)
+);
+
+INSERT INTO doctors VALUES
+(1, 'Dr. Smith', 'Cardiology'),
+(2, 'Dr. Johnson', 'Neurology');
+
+INSERT INTO patients VALUES
+(1, 'Patient A', 45, '1234567890'),
+(2, 'Patient B', 30, '9876543210');
+
+INSERT INTO appointments (doctor_id, patient_id, appointment_date, status) VALUES
+(1, 1, '2025-11-10', 'Scheduled'),
+(1, 2, '2025-11-11', 'Scheduled'),
+(2, 1, '2025-11-12', 'Scheduled');
+
+-- Find doctors with most appointments
+SELECT d.doctor_name, COUNT(a.appointment_id) AS appointment_count
+FROM doctors d
+LEFT JOIN appointments a ON d.doctor_id = a.doctor_id
+GROUP BY d.doctor_id, d.doctor_name
+ORDER BY appointment_count DESC
+LIMIT 1;
+
+
+64. Create a Sales Database:
+    - Tables: products, customers, orders, order_details
+    - Calculate total sales per product
+
+ANSWER:
+CREATE TABLE products (
+    product_id INT PRIMARY KEY,
+    product_name VARCHAR(50),
+    price DECIMAL(10,2)
+);
+
+CREATE TABLE customers (
+    customer_id INT PRIMARY KEY,
+    customer_name VARCHAR(50),
+    email VARCHAR(100)
+);
+
+CREATE TABLE orders (
+    order_id INT PRIMARY KEY AUTO_INCREMENT,
+    customer_id INT,
+    order_date DATE,
+    FOREIGN KEY (customer_id) REFERENCES customers(customer_id)
+);
+
+CREATE TABLE order_details (
+    detail_id INT PRIMARY KEY AUTO_INCREMENT,
+    order_id INT,
+    product_id INT,
+    quantity INT,
+    FOREIGN KEY (order_id) REFERENCES orders(order_id),
+    FOREIGN KEY (product_id) REFERENCES products(product_id)
+);
+
+INSERT INTO products VALUES
+(1, 'Laptop', 50000), (2, 'Mouse', 500), (3, 'Keyboard', 1500);
+
+INSERT INTO customers VALUES
+(1, 'Customer A', 'custA@email.com'),
+(2, 'Customer B', 'custB@email.com');
+
+INSERT INTO orders (customer_id, order_date) VALUES
+(1, '2025-11-01'), (2, '2025-11-02');
+
+INSERT INTO order_details (order_id, product_id, quantity) VALUES
+(1, 1, 2), (1, 2, 3), (2, 3, 1);
+
+-- Calculate total sales per product
+SELECT p.product_name, SUM(od.quantity * p.price) AS total_sales,
+    SUM(od.quantity) AS units_sold
+FROM products p
+INNER JOIN order_details od ON p.product_id = od.product_id
+GROUP BY p.product_id, p.product_name
+ORDER BY total_sales DESC;
+
+
+65. Implement a School Management System:
+    - Tables: students, teachers, subjects, marks
+    - Query to generate student report cards with percentages
+
+ANSWER:
+CREATE TABLE students_school (
+    student_id INT PRIMARY KEY,
+    student_name VARCHAR(50),
+    class VARCHAR(10)
+);
+
+CREATE TABLE subjects (
+    subject_id INT PRIMARY KEY,
+    subject_name VARCHAR(50),
+    max_marks INT
+);
+
+CREATE TABLE marks (
+    mark_id INT PRIMARY KEY AUTO_INCREMENT,
+    student_id INT,
+    subject_id INT,
+    marks_obtained INT,
+    FOREIGN KEY (student_id) REFERENCES students_school(student_id),
+    FOREIGN KEY (subject_id) REFERENCES subjects(subject_id)
+);
+
+INSERT INTO students_school VALUES (1, 'John', '10A'), (2, 'Jane', '10A');
+
+INSERT INTO subjects VALUES
+(1, 'Mathematics', 100), (2, 'Science', 100), (3, 'English', 100);
+
+INSERT INTO marks (student_id, subject_id, marks_obtained) VALUES
+(1, 1, 85), (1, 2, 90), (1, 3, 88),
+(2, 1, 78), (2, 2, 82), (2, 3, 85);
+
+-- Generate report card with percentage
+SELECT s.student_name, s.class,
+    SUM(m.marks_obtained) AS total_marks,
+    SUM(sub.max_marks) AS max_total,
+    ROUND((SUM(m.marks_obtained) / SUM(sub.max_marks)) * 100, 2) AS percentage
+FROM students_school s
+INNER JOIN marks m ON s.student_id = m.student_id
+INNER JOIN subjects sub ON m.subject_id = sub.subject_id
+GROUP BY s.student_id, s.student_name, s.class;
+
+
+66. Create a Banking System:
+    - Tables: accounts, transactions
+    - Implement a stored procedure for money transfer with proper checks
+
+ANSWER:
+CREATE TABLE accounts (
+    account_id INT PRIMARY KEY,
+    account_holder VARCHAR(50),
+    balance DECIMAL(10,2)
+);
+
+CREATE TABLE transactions (
+    transaction_id INT PRIMARY KEY AUTO_INCREMENT,
+    from_account INT,
+    to_account INT,
+    amount DECIMAL(10,2),
+    transaction_date DATETIME DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (from_account) REFERENCES accounts(account_id),
+    FOREIGN KEY (to_account) REFERENCES accounts(account_id)
+);
+
+INSERT INTO accounts VALUES
+(1001, 'Alice', 50000),
+(1002, 'Bob', 30000);
+
+DELIMITER //
+CREATE PROCEDURE TransferMoney(
+    IN from_acc INT,
+    IN to_acc INT,
+    IN transfer_amount DECIMAL(10,2)
+)
+BEGIN
+    DECLARE current_balance DECIMAL(10,2);
+    
+    START TRANSACTION;
+    
+    -- Check balance
+    SELECT balance INTO current_balance FROM accounts WHERE account_id = from_acc;
+    
+    IF current_balance >= transfer_amount THEN
+        -- Deduct from sender
+        UPDATE accounts SET balance = balance - transfer_amount WHERE account_id = from_acc;
+        -- Add to receiver
+        UPDATE accounts SET balance = balance + transfer_amount WHERE account_id = to_acc;
+        -- Log transaction
+        INSERT INTO transactions (from_account, to_account, amount) 
+        VALUES (from_acc, to_acc, transfer_amount);
+        
+        COMMIT;
+        SELECT 'Transaction successful' AS message;
+    ELSE
+        ROLLBACK;
+        SELECT 'Insufficient balance' AS message;
+    END IF;
+END //
+DELIMITER ;
+
+-- To use:
+CALL TransferMoney(1001, 1002, 5000);
+
+
+67. Build an E-commerce Database:
+    - Tables: users, products, cart, orders
+    - Query to show products never ordered
+
+ANSWER:
+CREATE TABLE users (
+    user_id INT PRIMARY KEY,
+    username VARCHAR(50),
+    email VARCHAR(100)
+);
+
+CREATE TABLE products_ecom (
+    product_id INT PRIMARY KEY,
+    product_name VARCHAR(100),
+    price DECIMAL(10,2),
+    stock INT
+);
+
+CREATE TABLE orders_ecom (
+    order_id INT PRIMARY KEY AUTO_INCREMENT,
+    user_id INT,
+    order_date DATE,
+    FOREIGN KEY (user_id) REFERENCES users(user_id)
+);
+
+CREATE TABLE order_items (
+    item_id INT PRIMARY KEY AUTO_INCREMENT,
+    order_id INT,
+    product_id INT,
+    quantity INT,
+    FOREIGN KEY (order_id) REFERENCES orders_ecom(order_id),
+    FOREIGN KEY (product_id) REFERENCES products_ecom(product_id)
+);
+
+INSERT INTO users VALUES (1, 'user1', 'user1@email.com');
+
+INSERT INTO products_ecom VALUES
+(1, 'Phone', 15000, 10),
+(2, 'Tablet', 20000, 5),
+(3, 'Headphones', 2000, 20);
+
+INSERT INTO orders_ecom (user_id, order_date) VALUES (1, '2025-11-01');
+
+INSERT INTO order_items (order_id, product_id, quantity) VALUES (1, 1, 1);
+
+-- Products never ordered
+SELECT p.product_name, p.price
+FROM products_ecom p
+LEFT JOIN order_items oi ON p.product_id = oi.product_id
+WHERE oi.item_id IS NULL;
+
+
+68. Create a Hotel Reservation System:
+    - Tables: rooms, guests, reservations
+    - Find available rooms for a given date range
+
+ANSWER:
+CREATE TABLE rooms (
+    room_id INT PRIMARY KEY,
+    room_type VARCHAR(50),
+    price_per_night DECIMAL(10,2)
+);
+
+CREATE TABLE guests (
+    guest_id INT PRIMARY KEY,
+    guest_name VARCHAR(50),
+    contact VARCHAR(15)
+);
+
+CREATE TABLE reservations (
+    reservation_id INT PRIMARY KEY AUTO_INCREMENT,
+    room_id INT,
+    guest_id INT,
+    check_in DATE,
+    check_out DATE,
+    FOREIGN KEY (room_id) REFERENCES rooms(room_id),
+    FOREIGN KEY (guest_id) REFERENCES guests(guest_id)
+);
+
+INSERT INTO rooms VALUES
+(101, 'Single', 2000),
+(102, 'Double', 3500),
+(103, 'Suite', 5000);
+
+INSERT INTO guests VALUES (1, 'Guest A', '1234567890');
+
+INSERT INTO reservations (room_id, guest_id, check_in, check_out) VALUES
+(101, 1, '2025-11-10', '2025-11-15');
+
+-- Find available rooms between Nov 12-14
+SELECT r.*
+FROM rooms r
+WHERE r.room_id NOT IN (
+    SELECT room_id FROM reservations
+    WHERE check_in <= '2025-11-14' AND check_out >= '2025-11-12'
+);
+
+
+69. Implement a Social Media Database:
+    - Tables: users, posts, comments, likes
+    - Find users with most followers
+
+ANSWER:
+CREATE TABLE users_social (
+    user_id INT PRIMARY KEY,
+    username VARCHAR(50),
+    email VARCHAR(100)
+);
+
+CREATE TABLE followers (
+    follower_id INT,
+    following_id INT,
+    PRIMARY KEY (follower_id, following_id),
+    FOREIGN KEY (follower_id) REFERENCES users_social(user_id),
+    FOREIGN KEY (following_id) REFERENCES users_social(user_id)
+);
+
+CREATE TABLE posts (
+    post_id INT PRIMARY KEY AUTO_INCREMENT,
+    user_id INT,
+    content TEXT,
+    post_date DATETIME,
+    FOREIGN KEY (user_id) REFERENCES users_social(user_id)
+);
+
+INSERT INTO users_social VALUES
+(1, 'user1', 'user1@email.com'),
+(2, 'user2', 'user2@email.com'),
+(3, 'user3', 'user3@email.com');
+
+INSERT INTO followers VALUES
+(2, 1), (3, 1), (1, 2);
+
+-- Find users with most followers
+SELECT u.username, COUNT(f.follower_id) AS follower_count
+FROM users_social u
+LEFT JOIN followers f ON u.user_id = f.following_id
+GROUP BY u.user_id, u.username
+ORDER BY follower_count DESC;
+
+
+70. Create an Inventory Management System:
+    - Tables: products, suppliers, stock, orders
+    - Trigger to update stock when order is placed
+    - Query to find products below reorder level
+
+ANSWER:
+CREATE TABLE suppliers (
+    supplier_id INT PRIMARY KEY,
+    supplier_name VARCHAR(50),
+    contact VARCHAR(15)
+);
+
+CREATE TABLE products_inventory (
+    product_id INT PRIMARY KEY,
+    product_name VARCHAR(100),
+    supplier_id INT,
+    reorder_level INT,
+    FOREIGN KEY (supplier_id) REFERENCES suppliers(supplier_id)
+);
+
+CREATE TABLE stock (
+    product_id INT PRIMARY KEY,
+    quantity INT,
+    FOREIGN KEY (product_id) REFERENCES products_inventory(product_id)
+);
+
+CREATE TABLE purchase_orders (
+    order_id INT PRIMARY KEY AUTO_INCREMENT,
+    product_id INT,
+    quantity INT,
+    order_date DATE,
+    FOREIGN KEY (product_id) REFERENCES products_inventory(product_id)
+);
+
+INSERT INTO suppliers VALUES (1, 'Supplier A', '1111111111');
+
+INSERT INTO products_inventory VALUES
+(1, 'Product A', 1, 10),
+(2, 'Product B', 1, 15);
+
+INSERT INTO stock VALUES (1, 25), (2, 8);
+
+-- Trigger to update stock
+DELIMITER //
+CREATE TRIGGER after_purchase_order
+AFTER INSERT ON purchase_orders
+FOR EACH ROW
+BEGIN
+    UPDATE stock
+    SET quantity = quantity - NEW.quantity
+    WHERE product_id = NEW.product_id;
+END //
+DELIMITER ;
+
+-- Products below reorder level
+SELECT p.product_name, s.quantity, p.reorder_level
+FROM products_inventory p
+INNER JOIN stock s ON p.product_id = s.product_id
+WHERE s.quantity < p.reorder_level;
+
+
+===============================================================================
+COMMON PRACTICAL TASKS YOU SHOULD PRACTICE:
+===============================================================================
+
+✓ Creating databases and tables with various constraints
+✓ Inserting, updating, and deleting records
+✓ Writing SELECT queries with WHERE, ORDER BY, LIMIT
+✓ Using aggregate functions (COUNT, SUM, AVG, MAX, MIN)
+✓ Performing JOINS (INNER, LEFT, RIGHT)
+✓ Writing subqueries and nested queries
+✓ Using GROUP BY and HAVING clauses
+✓ Creating and using VIEWS
+✓ Writing stored procedures and functions
+✓ Creating triggers
+✓ Using transactions (START TRANSACTION, COMMIT, ROLLBACK)
+✓ Creating indexes
+✓ Handling NULL values
+✓ Using LIKE, IN, BETWEEN operators
+
+===============================================================================
+TIPS FOR YOUR LAB EXAM:
+===============================================================================
+
+✓ Remember semicolon (;) at the end of each MySQL statement
+✓ Use AUTO_INCREMENT for primary keys where appropriate
+✓ Practice typing queries quickly and accurately
+✓ Know the difference between DELETE, DROP, and TRUNCATE
+✓ Remember to USE database_name before creating tables
+✓ Test your queries before submitting
+✓ Pay attention to the exact column names and data types asked
+✓ Keep your SQL keywords in UPPERCASE for readability (optional but good practice)
+✓ Review your library_management_system.sql file for reference
+
+GOOD LUCK ON YOUR LAB EXAM TODAY! 🎓💻
