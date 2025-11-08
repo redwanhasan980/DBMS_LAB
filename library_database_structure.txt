@@ -1,120 +1,154 @@
 ===============================================================================
-LIBRARY MANAGEMENT SYSTEM - PRIMARY KEYS & FOREIGN KEYS
+LIBRARY MANAGEMENT SYSTEM - DATABASE STRUCTURE
 ===============================================================================
 Database Name: library_management_system
 Total Tables: 12
+===============================================================================
+Legend: 🔑 PRIMARY KEY | 🔗 FOREIGN KEY | 📄 REGULAR COLUMN
 ===============================================================================
 
 
 TABLE 1: DEPARTMENT
 -------------------
-Primary Key:
-  - DepartmentNameShortHand
-
-Foreign Keys:
-  - None
+Columns:
+  🔑 DepartmentNameShortHand    VARCHAR(20)
+  📄 DepartmentName             VARCHAR(100)
+  📄 DepartmentHeadName         VARCHAR(100)
 
 
 TABLE 2: APPLICATION
 --------------------
-Primary Key:
-  - ApplicationID
-
-Foreign Keys:
-  - DepartmentNameShortHand → department(DepartmentNameShortHand)
+Columns:
+  🔑 ApplicationID              VARCHAR(20)
+  📄 BudgetYear                 INT(11)
+  📄 AllocatedBudget            DECIMAL(15,2)
+  🔗 DepartmentNameShortHand    VARCHAR(20) → department(DepartmentNameShortHand)
 
 
 TABLE 3: BOOKREQUISITION
 -------------------------
-Primary Key:
-  - RequisitionID
-
-Foreign Keys:
-  - ApplicationID → application(ApplicationID)
+Columns:
+  🔑 RequisitionID              VARCHAR(20)
+  🔗 ApplicationID              VARCHAR(20) → application(ApplicationID)
+  📄 BookTitle                  VARCHAR(200)
+  📄 AuthorName                 VARCHAR(150)
+  📄 Publisher                  VARCHAR(100)
+  📄 Edition                    VARCHAR(50)
+  📄 ISBN                       VARCHAR(20)
+  📄 Quantity                   INT(11)
+  📄 PricePerUnit               DECIMAL(10,2)
+  📄 TotalPrice                 DECIMAL(15,2)
 
 
 TABLE 4: VENDOR
 ---------------
-Primary Key:
-  - VendorID
-
-Foreign Keys:
-  - None
+Columns:
+  🔑 VendorID                   VARCHAR(20)
+  📄 VendorName                 VARCHAR(150)
+  📄 QuotationDetails           TEXT
 
 
 TABLE 5: PROCUREMENT
 --------------------
-Primary Key:
-  - ProcurementID
-
-Foreign Keys:
-  - RequisitionID → bookrequisition(RequisitionID)
-  - VendorID → vendor(VendorID)
+Columns:
+  🔑 ProcurementID              VARCHAR(20)
+  🔗 RequisitionID              VARCHAR(20) → bookrequisition(RequisitionID)
+  🔗 VendorID                   VARCHAR(20) → vendor(VendorID)
+  📄 ProcurementApprovalDate    DATE
+  📄 DeliveryDate               DATE
+  📄 HandoverDateToIICT         DATE
+  📄 BookReceivingRecord        VARCHAR(200)
+  📄 ShelvingStatus             VARCHAR(100)
+  📄 ProcurementStatus          VARCHAR(100)
 
 
 TABLE 6: BOOK
 -------------
-Primary Key:
-  - AccessionNumber
-
-Foreign Keys:
-  - None
+Columns:
+  🔑 AccessionNumber            VARCHAR(50)
+  📄 Title                      VARCHAR(200)
+  📄 AuthorEditor               VARCHAR(150)
+  📄 Edition                    VARCHAR(50)
+  📄 Volume                     VARCHAR(50)
+  📄 PlaceOfPublication         VARCHAR(100)
+  📄 Publisher                  VARCHAR(100)
+  📄 DateOfPublication          DATE
+  📄 Source                     VARCHAR(100)
+  📄 Binding                    VARCHAR(50)
+  📄 Pagination                 INT(11)
+  📄 BillNumber                 VARCHAR(50)
+  📄 BillDate                   DATE
+  📄 ISBN                       VARCHAR(20)
+  📄 AvailableCopy              INT(11)
 
 
 TABLE 7: CLASSIFICATION
 -----------------------
-Primary Key:
-  - AccessionNumber
-
-Foreign Keys:
-  - AccessionNumber → book(AccessionNumber) ON DELETE CASCADE
+Columns:
+  🔑🔗 AccessionNumber           VARCHAR(30) → book(AccessionNumber) ON DELETE CASCADE
+  📄 SubjectCategory            VARCHAR(100)
+  📄 DeweyDecimalNumber         DECIMAL(10,2)
+  📄 CutterCode                 VARCHAR(50)
+  📄 CallNumber                 VARCHAR(50)
+  📄 LocationCode               VARCHAR(50)
+  📄 CatalogEntryDate           DATE
+  📄 CatalogedBy                VARCHAR(100)
+  📄 Barcode                    VARCHAR(50)
+  📄 SpineLabel                 VARCHAR(100)
+  📄 shelfId                    VARCHAR(20)
+  📄 shelfCol                   INT(11)
+  📄 shelfRow                   INT(11)
 
 
 TABLE 8: STUDENT
 ----------------
-Primary Key:
-  - StudentRegNumber
-
-Foreign Keys:
-  - DepartmentNameShortHand → department(DepartmentNameShortHand)
+Columns:
+  🔑 StudentRegNumber           VARCHAR(20)
+  📄 StudentName                VARCHAR(150)
+  📄 PhoneNumber                VARCHAR(15)
+  🔗 DepartmentNameShortHand    VARCHAR(20) → department(DepartmentNameShortHand)
+  📄 Session                    VARCHAR(20)
 
 
 TABLE 9: FACULTY
 ----------------
-Primary Key:
-  - TeacherID
-
-Foreign Keys:
-  - DepartmentNameShortHand → department(DepartmentNameShortHand)
+Columns:
+  🔑 TeacherID                  VARCHAR(20)
+  📄 TeacherName                VARCHAR(150)
+  🔗 DepartmentNameShortHand    VARCHAR(20) → department(DepartmentNameShortHand)
+  📄 Designation                VARCHAR(100)
+  📄 Signature                  VARCHAR(200)
 
 
 TABLE 10: STUDENTBORROWING
 --------------------------
-Primary Key:
-  - BorrowID
-
-Foreign Keys:
-  - StudentRegNumber → student(StudentRegNumber)
-  - AccessionNumber → book(AccessionNumber)
+Columns:
+  🔑 BorrowID                   VARCHAR(20)
+  🔗 StudentRegNumber           VARCHAR(20) → student(StudentRegNumber)
+  🔗 AccessionNumber            VARCHAR(30) → book(AccessionNumber)
+  📄 BorrowDate                 DATE
+  📄 ReturnDate                 DATE
+  📄 Status                     VARCHAR(50)
 
 
 TABLE 11: FACULTYBORROWING
 --------------------------
-Primary Key:
-  - BorrowID
-
-Foreign Keys:
-  - TeacherID → faculty(TeacherID)
-  - AccessionNumber → book(AccessionNumber)
+Columns:
+  🔑 BorrowID                   VARCHAR(20)
+  🔗 TeacherID                  VARCHAR(20) → faculty(TeacherID)
+  🔗 AccessionNumber            VARCHAR(30) → book(AccessionNumber)
+  📄 BorrowDate                 DATE
+  📄 ReturnDate                 DATE
+  📄 Status                     VARCHAR(50)
 
 
 TABLE 12: OUTSIDEBOOKENTRY
 --------------------------
-Primary Key:
-  - EntryID
-
-Foreign Keys:
-  - StudentRegNumber → student(StudentRegNumber)
+Columns:
+  🔑 EntryID                    VARCHAR(20)
+  🔗 StudentRegNumber           VARCHAR(20) → student(StudentRegNumber)
+  📄 BookTitle                  VARCHAR(200)
+  📄 EntryStatus                VARCHAR(50)
 
 
 ===============================================================================
