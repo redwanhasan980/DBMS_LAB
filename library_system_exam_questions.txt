@@ -1,0 +1,711 @@
+===============================================================================
+LIBRARY MANAGEMENT SYSTEM - EXAM QUESTIONS WITH ANSWERS
+===============================================================================
+Based on: library_management_system database
+Sorted from Easy to Hard
+===============================================================================
+
+
+===============================================================================
+LEVEL 1: BASIC SELECT QUERIES (Easy)
+===============================================================================
+
+1. Display all departments in the library system.
+
+ANSWER:
+SELECT * FROM department;
+
+
+2. Display all book titles and authors from the book table.
+
+ANSWER:
+SELECT Title, AuthorEditor FROM book;
+
+
+3. Count the total number of books in the library.
+
+ANSWER:
+SELECT COUNT(*) AS total_books FROM book;
+
+
+4. Display all students from the CSE department.
+
+ANSWER:
+SELECT * FROM student 
+WHERE DepartmentNameShortHand = 'CSE';
+
+
+5. Display all vendors (supplier names).
+
+ANSWER:
+SELECT VendorName FROM vendor;
+
+
+6. Show all faculty members from the SWE department.
+
+ANSWER:
+SELECT * FROM faculty 
+WHERE DepartmentNameShortHand = 'SWE';
+
+
+7. Display the first 5 books ordered by title.
+
+ANSWER:
+SELECT * FROM book 
+ORDER BY Title 
+LIMIT 5;
+
+
+8. Find all books published by 'Pearson'.
+
+ANSWER:
+SELECT * FROM book 
+WHERE Publisher = 'Pearson';
+
+
+9. Display student names and phone numbers.
+
+ANSWER:
+SELECT StudentName, PhoneNumber FROM student;
+
+
+10. Show all books with available copies greater than 10.
+
+ANSWER:
+SELECT Title, AvailableCopy FROM book 
+WHERE AvailableCopy > 10;
+
+
+===============================================================================
+LEVEL 2: BASIC FILTERING & SORTING (Medium-Easy)
+===============================================================================
+
+11. Find all books published after 2010.
+
+ANSWER:
+SELECT Title, AuthorEditor, DateOfPublication 
+FROM book 
+WHERE DateOfPublication > '2010-01-01';
+
+
+12. Display all students whose names start with 'M'.
+
+ANSWER:
+SELECT * FROM student 
+WHERE StudentName LIKE 'M%';
+
+
+13. Find books with 'System' in their title.
+
+ANSWER:
+SELECT Title, AuthorEditor FROM book 
+WHERE Title LIKE '%System%';
+
+
+14. Display all borrowings with status 'Issued' (student borrowings).
+
+ANSWER:
+SELECT * FROM studentborrowing 
+WHERE Status = 'Issued';
+
+
+15. Show faculty members who are 'Professor' or 'Assistant Professor'.
+
+ANSWER:
+SELECT TeacherName, Designation FROM faculty 
+WHERE Designation IN ('Professor', 'Assistant Professor');
+
+
+16. Find all books in the 'Programming' subject category.
+
+ANSWER:
+SELECT b.Title, c.SubjectCategory 
+FROM book b
+INNER JOIN classification c ON b.AccessionNumber = c.AccessionNumber
+WHERE c.SubjectCategory = 'Programming';
+
+
+17. Display all applications with allocated budget greater than 250000.
+
+ANSWER:
+SELECT * FROM application 
+WHERE AllocatedBudget > 250000;
+
+
+18. Find students from session '2020-21'.
+
+ANSWER:
+SELECT * FROM student 
+WHERE Session = '2020-21';
+
+
+19. Display all books with ISBN starting with '978'.
+
+ANSWER:
+SELECT Title, ISBN FROM book 
+WHERE ISBN LIKE '978%';
+
+
+20. Show all procurements with 'Completed' status.
+
+ANSWER:
+SELECT * FROM procurement 
+WHERE ProcurementStatus = 'Completed';
+
+
+===============================================================================
+LEVEL 3: AGGREGATE FUNCTIONS & GROUP BY (Medium)
+===============================================================================
+
+21. Count the number of students in each department.
+
+ANSWER:
+SELECT DepartmentNameShortHand, COUNT(*) AS student_count 
+FROM student 
+GROUP BY DepartmentNameShortHand;
+
+
+22. Find the total allocated budget for each department.
+
+ANSWER:
+SELECT DepartmentNameShortHand, SUM(AllocatedBudget) AS total_budget 
+FROM application 
+GROUP BY DepartmentNameShortHand;
+
+
+23. Count how many books each department has requisitioned.
+
+ANSWER:
+SELECT a.DepartmentNameShortHand, COUNT(br.RequisitionID) AS requisition_count
+FROM application a
+LEFT JOIN bookrequisition br ON a.ApplicationID = br.ApplicationID
+GROUP BY a.DepartmentNameShortHand;
+
+
+24. Find the average price per unit in book requisitions.
+
+ANSWER:
+SELECT AVG(PricePerUnit) AS avg_price 
+FROM bookrequisition;
+
+
+25. Count the number of books by each publisher.
+
+ANSWER:
+SELECT Publisher, COUNT(*) AS book_count 
+FROM book 
+GROUP BY Publisher 
+ORDER BY book_count DESC;
+
+
+26. Find the maximum and minimum allocated budgets.
+
+ANSWER:
+SELECT MAX(AllocatedBudget) AS max_budget, 
+       MIN(AllocatedBudget) AS min_budget 
+FROM application;
+
+
+27. Count faculty members by designation.
+
+ANSWER:
+SELECT Designation, COUNT(*) AS faculty_count 
+FROM faculty 
+GROUP BY Designation;
+
+
+28. Find total quantity of books requisitioned per application.
+
+ANSWER:
+SELECT ApplicationID, SUM(Quantity) AS total_quantity 
+FROM bookrequisition 
+GROUP BY ApplicationID;
+
+
+29. Count books on each shelf.
+
+ANSWER:
+SELECT shelfId, COUNT(*) AS book_count 
+FROM classification 
+GROUP BY shelfId;
+
+
+30. Find departments with more than 5 students.
+
+ANSWER:
+SELECT DepartmentNameShortHand, COUNT(*) AS student_count 
+FROM student 
+GROUP BY DepartmentNameShortHand 
+HAVING COUNT(*) > 5;
+
+
+===============================================================================
+LEVEL 4: JOINS (Medium-Hard)
+===============================================================================
+
+31. Display student names with their department names (not shorthand).
+
+ANSWER:
+SELECT s.StudentName, d.DepartmentName 
+FROM student s
+INNER JOIN department d ON s.DepartmentNameShortHand = d.DepartmentNameShortHand;
+
+
+32. Show all book requisitions with their corresponding application details.
+
+ANSWER:
+SELECT br.RequisitionID, br.BookTitle, a.DepartmentNameShortHand, a.AllocatedBudget
+FROM bookrequisition br
+INNER JOIN application a ON br.ApplicationID = a.ApplicationID;
+
+
+33. Display faculty names with their department names.
+
+ANSWER:
+SELECT f.TeacherName, f.Designation, d.DepartmentName 
+FROM faculty f
+INNER JOIN department d ON f.DepartmentNameShortHand = d.DepartmentNameShortHand;
+
+
+34. Show all student borrowings with student names and book titles.
+
+ANSWER:
+SELECT s.StudentName, b.Title, sb.BorrowDate, sb.ReturnDate, sb.Status
+FROM studentborrowing sb
+INNER JOIN student s ON sb.StudentRegNumber = s.StudentRegNumber
+INNER JOIN book b ON sb.AccessionNumber = b.AccessionNumber;
+
+
+35. Display faculty borrowings with faculty names and book titles.
+
+ANSWER:
+SELECT f.TeacherName, b.Title, fb.BorrowDate, fb.ReturnDate, fb.Status
+FROM facultyborrowing fb
+INNER JOIN faculty f ON fb.TeacherID = f.TeacherID
+INNER JOIN book b ON fb.AccessionNumber = b.AccessionNumber;
+
+
+36. Show books with their classification details (Dewey Decimal, Call Number).
+
+ANSWER:
+SELECT b.Title, b.AuthorEditor, c.DeweyDecimalNumber, c.CallNumber, c.shelfId
+FROM book b
+INNER JOIN classification c ON b.AccessionNumber = c.AccessionNumber;
+
+
+37. Display procurement details with vendor names.
+
+ANSWER:
+SELECT p.ProcurementID, v.VendorName, p.ProcurementApprovalDate, 
+       p.DeliveryDate, p.ProcurementStatus
+FROM procurement p
+INNER JOIN vendor v ON p.VendorID = v.VendorID;
+
+
+38. Show requisitions with vendor information through procurement.
+
+ANSWER:
+SELECT br.BookTitle, br.AuthorName, v.VendorName, p.DeliveryDate
+FROM bookrequisition br
+INNER JOIN procurement p ON br.RequisitionID = p.RequisitionID
+INNER JOIN vendor v ON p.VendorID = v.VendorID;
+
+
+39. List all students who have borrowed books (no duplicates).
+
+ANSWER:
+SELECT DISTINCT s.StudentName, s.DepartmentNameShortHand
+FROM student s
+INNER JOIN studentborrowing sb ON s.StudentRegNumber = sb.StudentRegNumber;
+
+
+40. Display outside book entries with student names and departments.
+
+ANSWER:
+SELECT o.EntryID, s.StudentName, d.DepartmentName, o.BookTitle, o.EntryStatus
+FROM outsidebookentry o
+INNER JOIN student s ON o.StudentRegNumber = s.StudentRegNumber
+INNER JOIN department d ON s.DepartmentNameShortHand = d.DepartmentNameShortHand;
+
+
+===============================================================================
+LEVEL 5: SUBQUERIES & ADVANCED FILTERING (Hard)
+===============================================================================
+
+41. Find students who have never borrowed any book.
+
+ANSWER:
+SELECT * FROM student 
+WHERE StudentRegNumber NOT IN (
+    SELECT StudentRegNumber FROM studentborrowing
+);
+
+
+42. Find books that have never been borrowed by students.
+
+ANSWER:
+SELECT * FROM book 
+WHERE AccessionNumber NOT IN (
+    SELECT AccessionNumber FROM studentborrowing
+);
+
+
+43. Find the most expensive book requisition (by PricePerUnit).
+
+ANSWER:
+SELECT * FROM bookrequisition 
+WHERE PricePerUnit = (SELECT MAX(PricePerUnit) FROM bookrequisition);
+
+
+44. Find all students from departments that have allocated budget > 250000.
+
+ANSWER:
+SELECT s.* 
+FROM student s
+WHERE s.DepartmentNameShortHand IN (
+    SELECT DepartmentNameShortHand 
+    FROM application 
+    WHERE AllocatedBudget > 250000
+);
+
+
+45. Find books that are currently issued (not returned) by students.
+
+ANSWER:
+SELECT b.Title, b.AuthorEditor, sb.BorrowDate, sb.ReturnDate
+FROM book b
+INNER JOIN studentborrowing sb ON b.AccessionNumber = sb.AccessionNumber
+WHERE sb.Status = 'Issued' AND sb.ReturnDate > CURDATE();
+
+
+46. Find departments with the highest number of students.
+
+ANSWER:
+SELECT DepartmentNameShortHand, COUNT(*) AS student_count
+FROM student
+GROUP BY DepartmentNameShortHand
+HAVING COUNT(*) = (
+    SELECT MAX(cnt) FROM (
+        SELECT COUNT(*) AS cnt FROM student GROUP BY DepartmentNameShortHand
+    ) AS counts
+);
+
+
+47. Find faculty who have borrowed more than one book.
+
+ANSWER:
+SELECT f.TeacherName, COUNT(fb.BorrowID) AS books_borrowed
+FROM faculty f
+INNER JOIN facultyborrowing fb ON f.TeacherID = fb.TeacherID
+GROUP BY f.TeacherID, f.TeacherName
+HAVING COUNT(fb.BorrowID) > 1;
+
+
+48. Find books with available copies less than the average.
+
+ANSWER:
+SELECT Title, AvailableCopy 
+FROM book 
+WHERE AvailableCopy < (SELECT AVG(AvailableCopy) FROM book);
+
+
+49. Find the second most allocated budget.
+
+ANSWER:
+SELECT MAX(AllocatedBudget) AS second_highest_budget
+FROM application
+WHERE AllocatedBudget < (SELECT MAX(AllocatedBudget) FROM application);
+
+
+50. List books that are in the same subject category as 'Database System Concepts'.
+
+ANSWER:
+SELECT b.Title, c.SubjectCategory
+FROM book b
+INNER JOIN classification c ON b.AccessionNumber = c.AccessionNumber
+WHERE c.SubjectCategory = (
+    SELECT c2.SubjectCategory 
+    FROM book b2
+    INNER JOIN classification c2 ON b2.AccessionNumber = c2.AccessionNumber
+    WHERE b2.Title = 'Database System Concepts'
+);
+
+
+===============================================================================
+LEVEL 6: COMPLEX QUERIES WITH MULTIPLE JOINS (Very Hard)
+===============================================================================
+
+51. Show complete borrowing history with student names, departments, and book details.
+
+ANSWER:
+SELECT s.StudentName, d.DepartmentName, b.Title, b.AuthorEditor,
+       sb.BorrowDate, sb.ReturnDate, sb.Status
+FROM studentborrowing sb
+INNER JOIN student s ON sb.StudentRegNumber = s.StudentRegNumber
+INNER JOIN department d ON s.DepartmentNameShortHand = d.DepartmentNameShortHand
+INNER JOIN book b ON sb.AccessionNumber = b.AccessionNumber
+ORDER BY sb.BorrowDate DESC;
+
+
+52. Display complete procurement workflow from application to delivery.
+
+ANSWER:
+SELECT d.DepartmentName, a.ApplicationID, a.AllocatedBudget,
+       br.BookTitle, br.Quantity, br.TotalPrice,
+       v.VendorName, p.ProcurementApprovalDate, p.DeliveryDate,
+       p.ProcurementStatus
+FROM department d
+INNER JOIN application a ON d.DepartmentNameShortHand = a.DepartmentNameShortHand
+INNER JOIN bookrequisition br ON a.ApplicationID = br.ApplicationID
+INNER JOIN procurement p ON br.RequisitionID = p.RequisitionID
+INNER JOIN vendor v ON p.VendorID = v.VendorID;
+
+
+53. Find total books borrowed by each department (through students).
+
+ANSWER:
+SELECT d.DepartmentName, COUNT(sb.BorrowID) AS total_borrowed
+FROM department d
+INNER JOIN student s ON d.DepartmentNameShortHand = s.DepartmentNameShortHand
+INNER JOIN studentborrowing sb ON s.StudentRegNumber = sb.StudentRegNumber
+GROUP BY d.DepartmentName;
+
+
+54. Show books borrowed by faculty along with their department information.
+
+ANSWER:
+SELECT f.TeacherName, d.DepartmentName, f.Designation,
+       b.Title, fb.BorrowDate, fb.Status
+FROM facultyborrowing fb
+INNER JOIN faculty f ON fb.TeacherID = f.TeacherID
+INNER JOIN department d ON f.DepartmentNameShortHand = d.DepartmentNameShortHand
+INNER JOIN book b ON fb.AccessionNumber = b.AccessionNumber;
+
+
+55. Find students who borrowed books from the same shelf location.
+
+ANSWER:
+SELECT s.StudentName, b.Title, c.shelfId, c.shelfCol, c.shelfRow
+FROM studentborrowing sb
+INNER JOIN student s ON sb.StudentRegNumber = s.StudentRegNumber
+INNER JOIN book b ON sb.AccessionNumber = b.AccessionNumber
+INNER JOIN classification c ON b.AccessionNumber = c.AccessionNumber
+ORDER BY c.shelfId, c.shelfCol, c.shelfRow;
+
+
+56. Display total procurement value per department.
+
+ANSWER:
+SELECT d.DepartmentName, SUM(br.TotalPrice) AS total_procurement_value
+FROM department d
+INNER JOIN application a ON d.DepartmentNameShortHand = a.DepartmentNameShortHand
+INNER JOIN bookrequisition br ON a.ApplicationID = br.ApplicationID
+GROUP BY d.DepartmentName;
+
+
+57. Find books that are cataloged but never borrowed.
+
+ANSWER:
+SELECT b.Title, c.CallNumber, c.shelfId
+FROM book b
+INNER JOIN classification c ON b.AccessionNumber = c.AccessionNumber
+WHERE b.AccessionNumber NOT IN (
+    SELECT AccessionNumber FROM studentborrowing
+    UNION
+    SELECT AccessionNumber FROM facultyborrowing
+);
+
+
+58. Show procurement status summary by vendor.
+
+ANSWER:
+SELECT v.VendorName, 
+       COUNT(p.ProcurementID) AS total_procurements,
+       SUM(CASE WHEN p.ProcurementStatus = 'Completed' THEN 1 ELSE 0 END) AS completed,
+       SUM(CASE WHEN p.ProcurementStatus = 'Pending' THEN 1 ELSE 0 END) AS pending
+FROM vendor v
+LEFT JOIN procurement p ON v.VendorID = p.VendorID
+GROUP BY v.VendorName;
+
+
+59. Find the most active borrower (student or faculty combined).
+
+ANSWER:
+SELECT 'Student' AS borrower_type, s.StudentName AS name, COUNT(*) AS borrow_count
+FROM studentborrowing sb
+INNER JOIN student s ON sb.StudentRegNumber = s.StudentRegNumber
+GROUP BY s.StudentRegNumber, s.StudentName
+UNION
+SELECT 'Faculty' AS borrower_type, f.TeacherName AS name, COUNT(*) AS borrow_count
+FROM facultyborrowing fb
+INNER JOIN faculty f ON fb.TeacherID = f.TeacherID
+GROUP BY f.TeacherID, f.TeacherName
+ORDER BY borrow_count DESC
+LIMIT 1;
+
+
+60. Display budget utilization percentage per department.
+
+ANSWER:
+SELECT d.DepartmentName, 
+       a.AllocatedBudget,
+       IFNULL(SUM(br.TotalPrice), 0) AS spent_amount,
+       ROUND((IFNULL(SUM(br.TotalPrice), 0) / a.AllocatedBudget) * 100, 2) AS utilization_percentage
+FROM department d
+INNER JOIN application a ON d.DepartmentNameShortHand = a.DepartmentNameShortHand
+LEFT JOIN bookrequisition br ON a.ApplicationID = br.ApplicationID
+GROUP BY d.DepartmentName, a.AllocatedBudget;
+
+
+===============================================================================
+LEVEL 7: ADVANCED ANALYTICAL QUERIES (Expert)
+===============================================================================
+
+61. Find books borrowed by students from departments other than their book's target department.
+
+ANSWER:
+SELECT s.StudentName, s.DepartmentNameShortHand AS student_dept,
+       b.Title, sb.BorrowDate
+FROM studentborrowing sb
+INNER JOIN student s ON sb.StudentRegNumber = s.StudentRegNumber
+INNER JOIN book b ON sb.AccessionNumber = b.AccessionNumber;
+
+
+62. Calculate the average borrowing duration for returned books.
+
+ANSWER:
+SELECT AVG(DATEDIFF(ReturnDate, BorrowDate)) AS avg_days_borrowed
+FROM studentborrowing
+WHERE Status = 'Returned' AND ReturnDate IS NOT NULL;
+
+
+63. Find departments that have not utilized their full budget.
+
+ANSWER:
+SELECT d.DepartmentName, 
+       a.AllocatedBudget,
+       IFNULL(SUM(br.TotalPrice), 0) AS utilized_budget,
+       (a.AllocatedBudget - IFNULL(SUM(br.TotalPrice), 0)) AS remaining_budget
+FROM department d
+INNER JOIN application a ON d.DepartmentNameShortHand = a.DepartmentNameShortHand
+LEFT JOIN bookrequisition br ON a.ApplicationID = br.ApplicationID
+GROUP BY d.DepartmentName, a.AllocatedBudget
+HAVING remaining_budget > 0;
+
+
+64. Find the shelf with the most books.
+
+ANSWER:
+SELECT shelfId, COUNT(*) AS book_count
+FROM classification
+GROUP BY shelfId
+ORDER BY book_count DESC
+LIMIT 1;
+
+
+65. Show borrowing patterns: which books are most frequently borrowed?
+
+ANSWER:
+SELECT b.Title, b.AuthorEditor,
+       (SELECT COUNT(*) FROM studentborrowing WHERE AccessionNumber = b.AccessionNumber) +
+       (SELECT COUNT(*) FROM facultyborrowing WHERE AccessionNumber = b.AccessionNumber) AS total_borrows
+FROM book b
+ORDER BY total_borrows DESC
+LIMIT 10;
+
+
+66. Find students who have overdue books (ReturnDate is in the past but Status is still 'Issued').
+
+ANSWER:
+SELECT s.StudentName, s.PhoneNumber, b.Title, 
+       sb.BorrowDate, sb.ReturnDate,
+       DATEDIFF(CURDATE(), sb.ReturnDate) AS days_overdue
+FROM studentborrowing sb
+INNER JOIN student s ON sb.StudentRegNumber = s.StudentRegNumber
+INNER JOIN book b ON sb.AccessionNumber = b.AccessionNumber
+WHERE sb.Status = 'Issued' AND sb.ReturnDate < CURDATE();
+
+
+67. Create a report showing department-wise book procurement summary for 2017.
+
+ANSWER:
+SELECT d.DepartmentName,
+       COUNT(DISTINCT br.RequisitionID) AS total_requisitions,
+       SUM(br.Quantity) AS total_books_requisitioned,
+       SUM(br.TotalPrice) AS total_amount_spent
+FROM department d
+INNER JOIN application a ON d.DepartmentNameShortHand = a.DepartmentNameShortHand
+INNER JOIN bookrequisition br ON a.ApplicationID = br.ApplicationID
+WHERE a.BudgetYear = 2017
+GROUP BY d.DepartmentName;
+
+
+68. Find vendors who have completed all their procurements.
+
+ANSWER:
+SELECT v.VendorName
+FROM vendor v
+WHERE v.VendorID NOT IN (
+    SELECT VendorID FROM procurement WHERE ProcurementStatus = 'Pending'
+);
+
+
+69. Display year-wise budget allocation trends.
+
+ANSWER:
+SELECT BudgetYear, 
+       COUNT(ApplicationID) AS total_applications,
+       SUM(AllocatedBudget) AS total_budget,
+       AVG(AllocatedBudget) AS avg_budget_per_application
+FROM application
+GROUP BY BudgetYear
+ORDER BY BudgetYear;
+
+
+70. Create a comprehensive library usage report showing student and faculty borrowing statistics.
+
+ANSWER:
+SELECT 
+    'Total Books' AS metric, COUNT(*) AS value FROM book
+UNION
+SELECT 
+    'Total Students', COUNT(*) FROM student
+UNION
+SELECT 
+    'Total Faculty', COUNT(*) FROM faculty
+UNION
+SELECT 
+    'Student Borrowings', COUNT(*) FROM studentborrowing
+UNION
+SELECT 
+    'Faculty Borrowings', COUNT(*) FROM facultyborrowing
+UNION
+SELECT 
+    'Currently Issued (Students)', COUNT(*) FROM studentborrowing WHERE Status = 'Issued'
+UNION
+SELECT 
+    'Currently Borrowed (Faculty)', COUNT(*) FROM facultyborrowing WHERE Status = 'Borrowed'
+UNION
+SELECT 
+    'Books Available', SUM(AvailableCopy) FROM book;
+
+
+===============================================================================
+END OF EXAM QUESTIONS
+===============================================================================
+
+QUICK REFERENCE - KEY TABLES:
+- department: DepartmentNameShortHand (PK)
+- student: StudentRegNumber (PK), DepartmentNameShortHand (FK)
+- faculty: TeacherID (PK), DepartmentNameShortHand (FK)
+- book: AccessionNumber (PK)
+- classification: AccessionNumber (PK, FK to book)
+- application: ApplicationID (PK), DepartmentNameShortHand (FK)
+- bookrequisition: RequisitionID (PK), ApplicationID (FK)
+- vendor: VendorID (PK)
+- procurement: ProcurementID (PK), RequisitionID (FK), VendorID (FK)
+- studentborrowing: BorrowID (PK), StudentRegNumber (FK), AccessionNumber (FK)
+- facultyborrowing: BorrowID (PK), TeacherID (FK), AccessionNumber (FK)
+- outsidebookentry: EntryID (PK), StudentRegNumber (FK)
+
+GOOD LUCK! 🎓
